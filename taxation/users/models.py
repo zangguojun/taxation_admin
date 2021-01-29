@@ -7,7 +7,6 @@ from areas.models import Area
 class User(AbstractUser):
     mobile = models.CharField(max_length=11)
     email_active = models.BooleanField(default=False)
-    # 默认收货地址
     default_address = models.ForeignKey('users.Address', null=True, related_name='users',on_delete=models.CASCADE)
 
 
