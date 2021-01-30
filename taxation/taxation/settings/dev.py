@@ -211,6 +211,7 @@ REST_FRAMEWORK = {
 JWT_AUTH = {
     # 指定有效期
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'taxation.utils.jwt_response.jwt_response_payload_handler',
 }
 
 # CORS跨域配置
