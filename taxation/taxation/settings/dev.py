@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 
     'users',
     'tax_admin',
+    'index',
 ]
 
 MIDDLEWARE = [
