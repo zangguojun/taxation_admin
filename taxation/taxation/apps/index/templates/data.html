@@ -1,0 +1,145 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block extrahead %}{{ block.super }}
+<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+{{ media }}
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">{% endblock %}
+
+{% block coltype %}colM{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-form{% endblock %}
+
+{% if not is_popup %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+&rsaquo; {% if has_view_permission %}<a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %}
+&rsaquo; {% if add %}{% blocktrans with name=opts.verbose_name %}Add {{ name }}{% endblocktrans %}{% else %}{{ original|truncatewords:"18" }}{% endif %}
+</div>
+{% endblock %}
+{% endif %}
+
+{% block content %}<div id="content-main">
+{% block object-tools %}
+{% if change %}{% if not is_popup %}
+  <ul class="object-tools">
+    {% block object-tools-items %}
+      {% change_form_object_tools %}
+    {% endblock %}
+  </ul>
+{% endif %}{% endif %}
+{% endblock %}
+<form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.model_name }}_form" novalidate>{% csrf_token %}{% block form_top %}{% endblock %}
+<div>
+{% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1">{% endif %}
+{% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}">{% endif %}
+{% if save_on_top %}{% block submit_buttons_top %}{% submit_row %}{% endblock %}{% endif %}
+{% if errors %}
+    <p class="errornote">
+    {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+    </p>
+    {{ adminform.form.non_field_errors }}
+{% endif %}
+
+{% block field_sets %}
+{% for fieldset in adminform %}
+  {% include "admin/includes/fieldset.html" %}
+{% endfor %}
+{% endblock %}
+
+{% block after_field_sets %}{% endblock %}
+
+{% block inline_field_sets %}
+{% for inline_admin_formset in inline_admin_formsets %}
+    {% include inline_admin_formset.opts.template %}
+{% endfor %}
+{% endblock %}
+
+{% block after_related_objects %}{% endblock %}
+
+{% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+
+{% block admin_change_form_document_ready %}
+    <script type="text/javascript"
+            id="django-admin-form-add-constants"
+            src="{% static 'admin/js/change_form.js' %}"
+            {% if adminform and add %}
+            data-model-name="{{ opts.model_name }}"
+            {% endif %}>
+    </script>
+
+    <script type="text/javascript">
+        (function($) {
+            {% if change %}
+                $("#id_index4").find("option:contains({{ original.city }})").attr('selected', true);
+                $("#id_index4").trigger("change");
+            {% else %}
+                $('#id_index3').change(function() {
+                    let third_id = $('#id_index3').val();
+                    $.get('/indexs/categories/'+third_id, function(fourth_info) {
+                        var index4_info = $('#id_index4').empty().append('<option value>' + '---------' + '</option>');
+                        $.each(fourth_info, function(i, index4) {
+                            index4_info.append('<option value="' + index4.id + '">' + index4.name + '</option>')
+                        });
+
+                    });
+                });
+            {% endif %}
+
+
+            {% if change %}
+                $("#id_index3").find("option:contains({{ original.city }})").attr('selected', true);
+                $("#id_index3").trigger("change");
+            {% else %}
+                $('#id_index2').change(function() {
+                    let second_id = $('#id_index2').val();
+                    $.get('/indexs/categories/'+second_id, function(third_info) {
+                        var index3_info = $('#id_index3').empty().append('<option value>' + '---------' + '</option>');
+                        $.each(third_info, function(i, index3) {
+                            index3_info.append('<option value="' + index3.id + '">' + index3.name + '</option>')
+                        });
+                    });
+                });
+            {% endif %}
+
+
+            {% if change %}
+                $("#id_index2").find("option:contains({{ original.city }})").attr('selected', true);
+                $("#id_index2").trigger("change");
+            {% else %}
+                $('#id_index1').change(function() {
+                    let first_id = $('#id_index1').val();
+                    $.get('/indexs/categories/'+first_id, function(second_info) {
+                        var index2_info = $('#id_index2').empty().append('<option value>' + '---------' + '</option>');
+                        $.each(second_info, function(i, index2) {
+                            index2_info.append('<option value="' + index2.id + '">' + index2.name + '</option>')
+                        });
+                    });
+                });
+            {% endif %}
+
+            $.get('/indexs/categories/', function(first_info) {
+                {% if change %}
+                    $("#id_index1").find("option:contains({{ original.index_1 }})").attr('selected', true);
+                    $("#id_index1").trigger("change");
+                {% else %}
+                    var index1_info = $('#id_index1').empty().append('<option value>' + '---------' + '</option>');
+                    $.each(first_info, function(i, index_1) {
+                        index1_info.append('<option value="' + index_1.id + '">' + index_1.name + '</option>')
+                    });
+                {% endif %}
+            });
+        })(django.jQuery);
+    </script>
+{% endblock %}
+
+{# JavaScript for prepopulated fields #}
+{% prepopulated_fields_js %}
+
+</div>
+</form></div>
+{% endblock %}

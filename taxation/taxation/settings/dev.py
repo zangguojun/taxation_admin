@@ -17,8 +17,6 @@ import datetime
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0,os.path.join(BASE_DIR,'apps'))
-
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
@@ -34,17 +32,17 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'simpleui',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'corsheaders',
-
-    'users',
-    'tax_admin',
-    'index',
+    'users.apps.UsersConfig',
+    'index.apps.IndexConfig',
 ]
 
 MIDDLEWARE = [
@@ -116,9 +114,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-hans'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -135,26 +133,26 @@ AUTH_USER_MODEL = 'users.User'
 STATIC_URL = '/static/'
 
 # Redis缓存配置
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        # "LOCATION": "redis://127.0.0.1:6379/0",
-        "LOCATION": "redis://:buchiyu@127.0.0.1:6379/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
-    },
-    "session": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://:buchiyu@127.0.0.1:6379/2",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
-    }
-}
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         # "LOCATION": "redis://127.0.0.1:6379/0",
+#         "LOCATION": "redis://:buchiyu@127.0.0.1:6379/1",
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#         }
+#     },
+#     "session": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": "redis://:buchiyu@127.0.0.1:6379/2",
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#         }
+#     }
+# }
 # 指定session的保存方案
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-SESSION_CACHE_ALIAS = "session"
+# SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+# SESSION_CACHE_ALIAS = "session"
 
 
 # 日志：当运行出错时，记录在日志中，方便后续修改
@@ -215,9 +213,27 @@ JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'taxation.utils.jwt_response.jwt_response_payload_handler',
 }
 
-# CORS跨域配置
+# CORS跨域配置TEMPLATES
 CORS_ORIGIN_WHITELIST = (
     'http://127.0.0.1:8080',
+    'http://127.0.0.1:8081',
     'http://localhost:8080',
 )
 CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
+
+
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+SIMPLEUI_DEFAULT_THEME = 'layui.css'
+SIMPLEUI_HOME_INFO = False
+SIMPLEUI_ICON = {
+    '地市表': 'fas fa-city',
+    '指标表': 'fas fa-tags'
+}
+SIMPLEUI_LOGO = 'https://avatars2.githubusercontent.com/u/13655483?s=60&v=4'
+SIMPLEUI_HOME_ICON = 'fa fa-user'
+SIMPLEUI_STATIC_OFFLINE = True
+
+SIMPLEUI_HOME_TITLE = '百度一下你就知道'
+
+
