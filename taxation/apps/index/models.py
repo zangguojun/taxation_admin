@@ -1,6 +1,4 @@
 from django.db import models
-from smart_selects.db_fields import ChainedForeignKey
-
 
 class Index(models.Model):
     id = models.AutoField(primary_key=True,verbose_name="编号",help_text="例如0,1,12,99")

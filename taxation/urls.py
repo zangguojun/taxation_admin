@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from index.views import IndexsFirstView,IndexsOthersView
+from index.views import IndexsFirstView,IndexsOthersView,tree,simple_upload
 
 
 
@@ -25,5 +25,9 @@ urlpatterns = [
     # http://127.0.0.1:8000/indexs/categories/
     path('indexs/categories/<int:parent_id>/', IndexsOthersView.as_view()),
     # http://127.0.0.1:8000/indexs/categories/3/
+
+
+    path('index/tree/',tree),
+    path('index/simple_upload/',simple_upload)
 ]
 

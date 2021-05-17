@@ -40,9 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'corsheaders',
-    'users.apps.UsersConfig',
-    'index.apps.IndexConfig',
+    'import_export',
+    'users',
+    'index',
 ]
 
 MIDDLEWARE = [
@@ -53,7 +53,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'taxation.urls'
@@ -84,7 +83,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'tax',
-        'HOST': 'localhost',
+        'HOST': '42.192.168.62',
         'PORT': 3306,
         'USER': 'root',
         'PASSWORD': 'root',
@@ -132,108 +131,76 @@ AUTH_USER_MODEL = 'users.User'
 
 STATIC_URL = '/static/'
 
-# Redis缓存配置
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         # "LOCATION": "redis://127.0.0.1:6379/0",
-#         "LOCATION": "redis://:buchiyu@127.0.0.1:6379/1",
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-#         }
-#     },
-#     "session": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": "redis://:buchiyu@127.0.0.1:6379/2",
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-#         }
-#     }
-# }
-# 指定session的保存方案
-# SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-# SESSION_CACHE_ALIAS = "session"
-
-
-# 日志：当运行出错时，记录在日志中，方便后续修改
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,  # 是否禁用已经存在的日志器
-    'formatters': {  # 日志信息显示的格式
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(lineno)d %(message)s'
-        },
-        'simple': {
-            'format': '%(levelname)s %(module)s %(lineno)d %(message)s'
-        },
-    },
-    'filters': {  # 对日志进行过滤
-        'require_debug_true': {  # django在debug模式下才输出日志
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
-    },
-    'handlers': {  # 日志处理方法
-        'console': {  # 向终端中输出日志
-            'level': 'INFO',
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
-        'file': {  # 向文件中输出日志
-            'level': 'INFO',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(os.path.dirname(BASE_DIR), 'logs/taxation.log'),  # 日志文件的位置
-            'maxBytes': 300 * 1024 * 1024,
-            'backupCount': 10, # 10（+1）后会覆盖
-            'formatter': 'verbose'
-        },
-    },
-    'loggers': {  # 日志器
-        'django': {  # 定义了一个名为django的日志器
-            'handlers': ['console', 'file'],  # 可以同时向终端与文件中输出日志
-            'propagate': True,  # 是否继续传递日志信息
-            'level': 'INFO',  # 日志器接收的最低日志级别 线上一般是ERROR
-        },
-    }
-}
-
-# DRF配置
-REST_FRAMEWORK = {
-    # 指定认证
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-    ),
-}
-# JWt配置
-JWT_AUTH = {
-    # 指定有效期
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'taxation.utils.jwt_response.jwt_response_payload_handler',
-}
-
-# CORS跨域配置TEMPLATES
-CORS_ORIGIN_WHITELIST = (
-    'http://127.0.0.1:8080',
-    'http://127.0.0.1:8081',
-    'http://localhost:8080',
-)
-CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
-
 
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 SIMPLEUI_DEFAULT_THEME = 'layui.css'
 SIMPLEUI_HOME_INFO = False
 SIMPLEUI_ICON = {
-    '地市表': 'fas fa-city',
-    '指标表': 'fas fa-tags'
+    '地市表': 'fas fa-city',##/index/city/
+    '指标表': 'fas fa-tags',##/index/index/
+    '指标数据表': 'fas fa-database'##/index/data/
 }
+# 指标管理 fas fa-cog
+# 用户管理 far fa-user far fa-user
+# 认证和授权 fas fa-shield-alt fas fa-users-cog
 SIMPLEUI_LOGO = 'https://avatars2.githubusercontent.com/u/13655483?s=60&v=4'
 SIMPLEUI_HOME_ICON = 'fa fa-user'
 SIMPLEUI_STATIC_OFFLINE = True
 
-SIMPLEUI_HOME_TITLE = '百度一下你就知道'
-
-
+# SIMPLEUI_HOME_TITLE = '百度一下你就知道'
+SIMPLEUI_CONFIG = {
+    'system_keep': False,
+    'menu_display': ['指标管理','树状图','用户权限'],
+# 开启排序和过滤功能, 不填此字段为默认排序和全部显示, 空列表[] 为全部不显示.
+    'dynamic': True,
+# 设置是否开启动态菜单, 默认为False. 如果开启, 则会在每次用户登陆时动态展示菜单内容
+    'menus': [
+        {
+            'app':'index',
+            'name': '指标管理' ,
+            'icon': 'fa fa-cog',
+            'models': [{
+                'name': '地市表',
+                'url': '/index/city/',
+                'icon': 'fas fa-city'
+            },{
+                'name': '指标表',
+                'url': '/index/index/',
+                'icon': 'fas fa-tags'
+            },{
+                'name': '指标数据表',
+                'url': '/index/data/',
+                'icon': 'fas fa-database'
+            }
+            ]
+        },
+        {
+            'name': '树状图',
+            'icon': 'fas fa-project-diagram',
+            'url': '/index/tree/',
+        },
+        # {
+        #     'name': '导入数据',
+        #     'icon': 'fas fa-list',
+        #     'url': '/index/simple_upload/',
+        # },
+        {
+            'app':'user',
+            'name': '用户权限' ,
+            'icon': 'fas fa-shield-alt',
+            'models': [{
+                'name': '用户表',
+                'url': '/users/user/',
+                'icon': 'far fa-user'
+            },
+            {
+                'name': '权限表',
+                'url': '/auth/group/',
+                'icon': 'fas fa-users-cog'
+            }
+            ]
+        },
+    ]
+}
+# IMPORT_EXPORT_USE_TRANSACTIONS = True
